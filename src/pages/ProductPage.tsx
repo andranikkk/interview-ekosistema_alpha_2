@@ -7,7 +7,7 @@ import { Card, Image } from "@nextui-org/react"
 import { BASE_URL } from "../constants/constants"
 import type { Product } from "../constants/interface"
 
-import GoBack from "../components/GoBack"
+import { GoBack } from "../components/go-back"
 
 export const ProductPage: React.FC = () => {
   const [productsData, setProductsData] = useState<Product>({} as Product)

@@ -1,32 +1,24 @@
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Card, CardBody, CardHeader, Image } from "@nextui-org/react"
-
+import { Card, CardHeader, Image } from "@nextui-org/react"
 import { FaRegHeart } from "react-icons/fa"
 import { FaHeart } from "react-icons/fa6"
+
 import { DeleteIcon } from "./button-icons/deleteIcon"
+import type { Product } from "../../constants/interface"
 
-import type { IProduct } from "../../constants/interface"
+interface IProduct {
+  product: Product
+  onLike: (product: Product) => void
+  onDelete: (id: number) => void
+}
 
-export const ProductBlock: React.FC<IProduct> = ({
-  product,
-  onLike,
-  onDelete,
-}) => {
-  const [isLiked, setIsLiked] = useState(product.liked)
-
+const ProductBlock: React.FC<IProduct> = ({ product, onLike, onDelete }) => {
   const navigate = useNavigate()
-
-  useEffect(() => {
-    setIsLiked(product.liked)
-  }, [product.liked])
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation()
-
-    setIsLiked(!isLiked)
-
     onLike(product)
   }
 
@@ -52,10 +44,10 @@ export const ProductBlock: React.FC<IProduct> = ({
         <div className="flex flex-col gap-3 justify-around">
           <div
             onClick={handleLike}
-            className={`flex flex-col p-4 rounded-xl items-center ${isLiked ? "bg-red-400" : "bg-pink-300"} hover:bg-pink-400`}
+            className={`flex flex-col p-4 rounded-xl items-center ${product.liked ? "bg-red-400" : "bg-pink-300"} hover:bg-pink-400`}
           >
-            {isLiked ? <FaHeart size={25} /> : <FaRegHeart size={25} />}
-            <p>{isLiked ? "Dislike" : "Like"}</p>
+            {product.liked ? <FaHeart size={25} /> : <FaRegHeart size={25} />}
+            <p>{product.liked ? "Dislike" : "Like"}</p>
           </div>
           <div
             onClick={e => {
@@ -72,3 +64,5 @@ export const ProductBlock: React.FC<IProduct> = ({
     </Card>
   )
 }
+
+export default ProductBlock

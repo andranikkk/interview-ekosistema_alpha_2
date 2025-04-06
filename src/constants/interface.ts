@@ -12,13 +12,6 @@ export interface Product {
 
 export interface ProductsState {
   products: Product[]
-  likedProducts: Product[]
   showLiked: boolean
   isLoading: boolean
-}
-
-export interface IProduct {
-  product: Product
-  onLike: (product: Product) => void
-  onDelete: (id: number) => void
 }

@@ -1,14 +1,14 @@
 import { useEffect } from "react"
+
 import { useAppDispatch, useAppSelector } from "../app/hooks"
-import { deleteProduct, getProducts, toggleLike } from "../app/slice"
+import { deleteProductQuery, getProducts, toggleLikeQuery } from "../app/slice"
 import type { Product } from "../constants/interface"
 
-import { ProductBlock } from "../components/product-block"
 import { Header } from "../components/header"
+import { ProductBlock } from "../components/product-block"
 
 const ProductFetcher: React.FC = () => {
   const dispatch = useAppDispatch()
-  const likedProducts = useAppSelector(state => state.products.likedProducts)
   const showLikedProducts = useAppSelector(state => state.products.showLiked)
   const { products, isLoading } = useAppSelector(state => state.products)
 
@@ -17,8 +17,8 @@ const ProductFetcher: React.FC = () => {
   }, [dispatch])
 
   const displayedProducts = showLikedProducts
-    ? likedProducts
-    : products?.flat() || []
+    ? products.filter(p => p.liked)
+    : products
 
   if (isLoading) return <div>Loading...</div>
 
@@ -36,11 +36,11 @@ const ProductFetcher: React.FC = () => {
         <ProductBlock
           key={product.id}
           product={product}
-          onLike={likedProduct => {
-            dispatch(toggleLike(likedProduct))
+          onLike={product => {
+            dispatch(toggleLikeQuery(product))
           }}
           onDelete={id => {
-            dispatch(deleteProduct(id))
+            dispatch(deleteProductQuery(id))
           }}
         />
       ))}

@@ -18,9 +18,40 @@ export const getProducts = createAsyncThunk(
   },
 )
 
+export const toggleLikeQuery = createAsyncThunk(
+  "products/toggleLike",
+  async (product: Product, { rejectWithValue }) => {
+    try {
+      const updatedProduct = { ...product, liked: !product.liked }
+
+      const response = await axios.put(
+        `${BASE_URL}/${product.id}`,
+        updatedProduct,
+      )
+
+      return response.data as Product
+    } catch (error) {
+      console.error("Error toggling like:", error)
+      return rejectWithValue(error)
+    }
+  },
+)
+
+export const deleteProductQuery = createAsyncThunk(
+  "products/deleteProduct",
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await axios.delete(`${BASE_URL}/${id}`)
+      return id
+    } catch (error) {
+      console.error("Error deleting product:", error)
+      return rejectWithValue(error)
+    }
+  },
+)
+
 const initialState: ProductsState = {
   products: [],
-  likedProducts: [],
   showLiked: false,
   isLoading: true,
 }
@@ -31,27 +62,10 @@ export const productsSlice = createSlice({
   reducers: {
     setProducts(state, action: PayloadAction<Product[]>) {
       state.products = action.payload
-      state.likedProducts = state.products.filter(product => product.liked)
     },
-    toggleLike(state, { payload }: PayloadAction<Product>) {
-      state.products = state.products.map(product =>
-        product.id === payload.id
-          ? { ...product, liked: !product.liked }
-          : product,
-      )
 
-      state.likedProducts = state.products.filter(product => product.liked)
-    },
     toggleShowLiked(state) {
       state.showLiked = !state.showLiked
-    },
-    deleteProduct(state, action: PayloadAction<number>) {
-      state.products = state.products.filter(
-        product => product.id !== action.payload,
-      )
-      state.likedProducts = state.likedProducts.filter(
-        product => product.id !== action.payload,
-      )
     },
   },
   extraReducers: builder => {
@@ -63,16 +77,28 @@ export const productsSlice = createSlice({
       .addCase(getProducts.fulfilled, (state, action) => {
         state.isLoading = false
         state.products = action.payload
-        state.likedProducts = state.products.filter(product => product.liked)
       })
 
       .addCase(getProducts.rejected, state => {
         state.isLoading = false
       })
+
+      .addCase(toggleLikeQuery.fulfilled, (state, action) => {
+        const updatedProduct = action.payload
+
+        state.products = state.products.map(product =>
+          product.id === updatedProduct.id ? updatedProduct : product,
+        )
+      })
+
+      .addCase(deleteProductQuery.fulfilled, (state, action) => {
+        state.products = state.products.filter(
+          product => product.id !== action.payload,
+        )
+      })
   },
 })
 
-export const { setProducts, toggleLike, toggleShowLiked, deleteProduct } =
-  productsSlice.actions
+export const { setProducts, toggleShowLiked } = productsSlice.actions
 
 export default productsSlice.reducer
