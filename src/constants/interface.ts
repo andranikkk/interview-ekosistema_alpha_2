@@ -15,3 +15,5 @@ export interface ProductsState {
   showLiked: boolean
   isLoading: boolean
 }
+
+export type SortDirection = "asc" | "desc" | "none"

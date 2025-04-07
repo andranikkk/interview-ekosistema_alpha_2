@@ -1,6 +1,7 @@
 import type { PayloadAction } from "@reduxjs/toolkit"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axios from "axios"
+
 import { BASE_URL } from "../constants/constants"
 import type { Product, ProductsState } from "../constants/interface"
 
@@ -50,6 +51,30 @@ export const deleteProductQuery = createAsyncThunk(
   },
 )
 
+export const createProduct = createAsyncThunk(
+  "products/createProduct",
+  async (newProduct: Omit<Product, "id">, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(BASE_URL, newProduct)
+      return response.data as Product
+    } catch (error) {
+      console.error("Error creating product:", error)
+      return rejectWithValue(error)
+    }
+  },
+)
+
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
+  async (updatedProduct: Product) => {
+    const response = await axios.put(
+      `${BASE_URL}/${updatedProduct.id}`,
+      updatedProduct,
+    )
+    return response.data
+  },
+)
+
 const initialState: ProductsState = {
   products: [],
   showLiked: false,
@@ -94,6 +119,16 @@ export const productsSlice = createSlice({
       .addCase(deleteProductQuery.fulfilled, (state, action) => {
         state.products = state.products.filter(
           product => product.id !== action.payload,
+        )
+      })
+
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.products.push(action.payload)
+      })
+
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.products = state.products.map(product =>
+          product.id === action.payload.id ? action.payload : product,
         )
       })
   },
