@@ -50,5 +50,6 @@
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
     "vitest": "^1.2.0"
-  }
+  },
+  "homepage": "https://andranikkk.github.io/interview-ekosistema_alpha_2"
 }
